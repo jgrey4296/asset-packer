@@ -11,6 +11,13 @@ log.*
 
 # Godot
 .godot/
+/android/
+.import/
+export.cfg
+export_presets.cfg
+*.translation
+.mono/
+mono_crash.*.json
 
 # lisp/eask
 *.elc
