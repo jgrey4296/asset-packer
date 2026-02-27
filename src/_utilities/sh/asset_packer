@@ -1,0 +1,5 @@
+#!/usr/bin/env -S bash
+#  asset_packer<2> -*- mode: sh -*-
+
+# shellcheck disable=SC1091
+source "$POLY_SRC/_utilties/sh/lib-util.bash"
