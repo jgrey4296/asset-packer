@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://sda4v43pref5"]
+
+[node name="DockScene" type="Control" unique_id=2014970020]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=896193529]
+layout_mode = 0
+offset_right = 496.0
+offset_bottom = 696.0
+
+[node name="ColorRect" type="ColorRect" parent="ColorRect" unique_id=1482045893]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 56.0
+offset_right = 96.0
+offset_bottom = 95.99999
+color = Color(0.16565639, 0.16565642, 0.16565639, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="ColorRect" unique_id=1078879762]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 96.0
+offset_right = 264.0
+offset_bottom = 136.0
+color = Color(0.16565639, 0.16565642, 0.16565639, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="ColorRect" unique_id=19928719]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 248.0
+offset_right = 136.0
+offset_bottom = 288.0
+color = Color(0.16565639, 0.16565642, 0.16565639, 1)
+
+[node name="ColorRect4" type="ColorRect" parent="ColorRect" unique_id=2041860885]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 536.0
+offset_right = 280.0
+offset_bottom = 576.0
+color = Color(0.16565639, 0.16565642, 0.16565639, 1)
