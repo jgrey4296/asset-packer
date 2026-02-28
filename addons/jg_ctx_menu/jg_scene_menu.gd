@@ -17,7 +17,6 @@ A SceneTree context menu plugin
 func _popup_menu(paths: PackedStringArray):
 	print("Making Export dir for: " + str(paths))
 	add_context_menu_item("Export/Collect", do_export)
-	add_context_menu_item("reset_owners", reset_owners)
 
 func reset_owners(args):
 	print("-- resetting owners")
