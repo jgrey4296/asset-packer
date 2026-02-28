@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://d4bhpgsw3ay6q"]
+
+[ext_resource type="Texture2D" uid="uid://bjmli1rqtk4fv" path="res://jg_test_export/corn__x1_iconic_png_1354829785.png" id="1_cjlus"]
+[ext_resource type="Script" uid="uid://utdq2mssnqyv" path="res://jg_test_export/to_export.gd" id="2_3bc6j"]
+[ext_resource type="Texture2D" uid="uid://cu1m5oypm6qpx" path="res://jg_test_export/apple__x1_iconic_png_1354829396.png" id="2_nh7df"]
+
+[node name="Sprite2D" type="Sprite2D" unique_id=1333353992]
+texture = ExtResource("1_cjlus")
+
+[node name="bloo" type="Node2D" parent="." unique_id=593015839]
+script = ExtResource("2_3bc6j")
+
+[node name="blah" type="Node2D" parent="." unique_id=106944092]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1631877499]
+texture = ExtResource("2_nh7df")
