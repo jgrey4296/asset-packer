@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# run-test.bash -*- mode: sh -*-
+#set -o errexit
+set -o nounset
+set -o pipefail
+
+echo "Clearing old files"
+rm ./jg_test_export/* 2>/dev/null
+
+echo "Running test"
+godot --no-header --headless --editor -s ./basic.gd

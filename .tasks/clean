@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# run-clean.bash -*- mode: sh -*-
+#set -o errexit
+set -o nounset
+set -o pipefail
+
+
+echo "Cleaning"
+rm ./test_export/* 2>/dev/null
+
+exit 0

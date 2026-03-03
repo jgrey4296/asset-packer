@@ -1,5 +1,7 @@
 ## .gitignore -*- mode: Gitignore -*-
 
+test_export/
+
 # Log Files
 log.*
 .log
@@ -49,7 +51,7 @@ mono_crash.*.json
 # Build results and caches
 build/
 dist/
-/target 
+/target
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -64,7 +66,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-.sass-cache/ 
+.sass-cache/
 .vs/
 Generated\ Files/
 Generated_Code/

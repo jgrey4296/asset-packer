@@ -45,6 +45,7 @@ csharp_style_namespace_declarations  = file_scoped
 [*.{ex,exs}]
 
 [*.gd]
+indent_style              = tab
 
 [*.asl]
 

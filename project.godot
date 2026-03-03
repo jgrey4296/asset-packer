@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="asset_packer"
-run/main_scene="res://src/gd/scenes/main_scene.tscn"
+run/main_scene="uid://cce80puppi22o"
 config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/show_image=false
 boot_splash/stretch_mode=0
@@ -34,7 +34,7 @@ project/assembly_name="asset_packer"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/jg_asset_packer/plugin.cfg")
 
 [rendering]
 

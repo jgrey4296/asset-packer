@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# run-test.bash -*- mode: sh -*-
+#set -o errexit
+set -o nounset
+set -o pipefail
+
+echo "Running: $1"
+godot --no-header --headless --editor -s "$1"

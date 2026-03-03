@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dq6rbi8jx1vcr"]
+
+[ext_resource type="Script" uid="uid://ch3no6yhp2430" path="res://minimal_code/minimal.gd" id="1_wxoa1"]
+[ext_resource type="Texture2D" uid="uid://bugxtinx1ydmh" path="res://minimal_code/corn.png" id="2_aghtu"]
+
+[node name="Minimal" type="Node2D" unique_id=1889254074]
+script = ExtResource("1_wxoa1")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=926475436]
+texture = ExtResource("2_aghtu")

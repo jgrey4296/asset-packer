@@ -1,4 +1,4 @@
-# .tool-versions -*- mode: Conf[Space] -*- 
+# .tool-versions -*- mode: Conf[Space] -*-
 # https://asdf-vm.com/manage/configuration.html#tool-versions
 # https://mise.jdx.dev/dev-tools/
 direnv          2.37.1
@@ -8,7 +8,7 @@ git-lfs         3.7.1
 rust            1.91.1
 uv              0.9.28
 pre-commit      4.5.1
-
+godot 4.6.1
 # deno            2.5.6
 # dotnet          10.0.102
 # sqlite          3.51.2
@@ -18,9 +18,7 @@ pre-commit      4.5.1
 # elixir          1.18.4-otp-26
 # erlang          28.2
 # texlive         2025
-
 # ceptre          prerelease
-# godot           4.6_mono
 # ktlint          1.7.1
 # ocaml           5.3.0
 # opa             1.10.0
@@ -33,7 +31,6 @@ pre-commit      4.5.1
 # isabelle        2025
 # shellcheck      0.11.0
 # tlaplus         1.8.0
-
 # Extra, non-asdf
 # docfx           3.78.3+850a61c2ecb83b0bda21448f1393e480934556fd
 # cocq            4.14.1
