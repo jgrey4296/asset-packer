@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: publishing
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: asdf-vm/actions/setup@v4
       - name: setup polyglot
         run: |
