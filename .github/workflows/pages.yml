@@ -77,7 +77,7 @@ jobs:
           name: gh-pages-artifact
           path: site/
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site/
       - name: Deploy to GitHub Pages
