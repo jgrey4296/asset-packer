@@ -1,0 +1,13 @@
+MOVE THIS DIRECTORY OUT OF ADDONS FIRST
+
+This directory is an example for asset exporting.
+
+The Main scene, `example.tscn`, contains some basic uses of resources.
+When it is exported, *everything* in this directory, apart from this readme,
+will be duplicated into the target addon location.
+
+Any reference to a resource in the file
+is modified to refer to the duplicated resource instead.
+
+Note how the resource for "the apple" is *not* in this directory, it's already in addons.
+When 'example.tscn' is exported, that addon image is *not* duplicated.

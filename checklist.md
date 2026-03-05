@@ -1,47 +1,24 @@
 
 # Repo Checklist
 
+- [ ] Godot
+  - [x] plugin.cfg
+  - [x] Functionality
+  - [x] Located in addons
+  - [ ] Screenshots
+  - [ ] icon link
+  - [x] examples
+  - [x] No submodules
+  - [x] License in addon
+  - [x] Readme in addon
 
-- [ ] python
-    - [ ] pyproject.toml
-    - [ ] towncrier
-    - [ ] test dependencies
-    - [ ] docs dependencies
-- [ ] rust
-    - [ ] cargo.toml
-    - [ ] config.toml
-    - [ ] clippy
-    - [ ] rust-toolchain
-    - [ ] profiles
-    - [ ] build.rs
-- [ ] lisp
-- [ ] bridges
-  - [ ] py<->rs
-  - [ ] el<->rs
-- [ ] documentation
-    - [ ] architecture
-    - [ ] readthedocs
-    - [ ] readme.md
-    - [ ] towncrier
-    - [ ] templates
-    - [ ] license
-- [ ] dot files
-    - [ ] related
-    - [ ] tool-versions
-    - [ ] tox
-    - [ ] pre-commit
-    - [ ] lenvs
-    - [ ] rustfmt
-- [ ] rgignore
-- [ ] github
-    - [ ] publish yaml
-    - [ ] test yaml
-    - [ ] asdf yaml
-    - [ ] maturin CI yaml
-- [ ] scripts
-    - [ ] release script
-- [ ] related
-    - [ ] wiki
-- [ ] setup
-    - [ ] cargo init-dotnet
-    - [ ] asdf tools 
+- [x] dot files
+    - [x] related
+    - [x] tool-versions
+    - [x] pre-commit
+    - [x] rgignore
+    - [x] gitignore
+    - [x] gitattributes
+      - [x] export-ignore
+
+- [ ] Versioning

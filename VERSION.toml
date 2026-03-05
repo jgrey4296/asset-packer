@@ -10,6 +10,10 @@
 version = "0.1.0"
 
 [[files]]
+file = "addons/jg_asset_packer/plugin.cfg"
+expr = 'version="(.*)"'
+
+[[files]]
 file = "pyproject.toml"
 expr = 'version\s+=\s+"(.*)"'
 

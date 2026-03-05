@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://cce80puppi22o"]
+
+[ext_resource type="Texture2D" uid="uid://bjmli1rqtk4fv" path="res://addons/jg_asset_packer/basic_example/corn__x1_iconic_png_1354829785.png" id="1_scst5"]
+[ext_resource type="Texture2D" uid="uid://b0wthspotfj6d" path="res://addons/simple_images/apple__x1_iconic_png_1354829396.png" id="2_wmyp6"]
+[ext_resource type="Script" uid="uid://bx5f6j4xrpcpt" path="res://basic_example/to_export.gd" id="3_wmyp6"]
+[ext_resource type="Theme" uid="uid://brsf1vkywcm5f" path="res://basic_example/new_theme.tres" id="4_6rqat"]
+[ext_resource type="PackedScene" uid="uid://bspco867hijt2" path="res://basic_example/subscene.tscn" id="5_scst5"]
+
+[node name="Example" type="Node2D" unique_id=444489942]
+
+[node name="the corn" type="Sprite2D" parent="." unique_id=1335244298]
+position = Vector2(35, 42)
+texture = ExtResource("1_scst5")
+
+[node name="the apple" type="Sprite2D" parent="the corn" unique_id=575690808]
+position = Vector2(67, 51)
+texture = ExtResource("2_wmyp6")
+
+[node name="NodeWithCode" type="Node2D" parent="." unique_id=1680158724]
+script = ExtResource("3_wmyp6")
+
+[node name="Control" type="Control" parent="." unique_id=274719651]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="label with font" type="Label" parent="Control" unique_id=1977523122]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 38.0
+offset_right = 200.0
+offset_bottom = 61.0
+theme = ExtResource("4_6rqat")
+text = "blah"
+
+[node name="Subscene" parent="." unique_id=483978570 instance=ExtResource("5_scst5")]
