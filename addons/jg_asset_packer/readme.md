@@ -17,3 +17,5 @@ and select 'export as addon'.
 Alternatively, 'bundle as addon' will create a '.tscn' where all resources are built-in.
 
 Written on Godot 4.6.1.stable.
+
+If you run into issues, tell me on [github](https://github.com/jgrey4296/asset-packer).

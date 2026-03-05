@@ -1,6 +1,8 @@
 
 # Repo Checklist
 
+https://godotengine.org/asset-library/asset/submit
+
 - [ ] Godot
   - [x] plugin.cfg
   - [x] Functionality
@@ -22,3 +24,6 @@
       - [x] export-ignore
 
 - [ ] Versioning
+- [ ] use AcceptDialog/ConfirmationDialog
+- [ ] Add confirmation popup after export
+- [ ] polyglot release/tag
