@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://d336bfb56dsd2"]
+
+[ext_resource type="Script" uid="uid://tleymiqlnf4t" path="res://addons/jg_asset_packer/jg_popup.gd" id="1_5erff"]
+
+[node name="JgPopup" type="Popup" unique_id=1090549837]
+oversampling_override = 1.0
+size = Vector2i(200, 100)
+visible = true
+script = ExtResource("1_5erff")
+
+[node name="Control" type="Control" parent="." unique_id=2042433213]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LineEdit" type="LineEdit" parent="Control" unique_id=1007509229]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -15.5
+offset_right = 100.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "New Addon Name"
+alignment = 1

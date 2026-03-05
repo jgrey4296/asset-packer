@@ -8,13 +8,14 @@ extends EditorContextMenuPlugin
 
 const export_relative	= false
 const cache_mode		= ResourceLoader.CACHE_MODE_IGNORE_DEEP
-const export_target		= "test_export"
 const exclusions		= ["Node","Process","Thread Group","Physics Interpolation", "owner", "multiplayer"]
 const skip_dirs			= "addons"
 const INDENT_STR		= "->"
 const mod_name			= "%s-coll"
+var export_prefix		= "res://addons/"
+var export_target		= "test_export"
 var save_flags			= ResourceSaver.FLAG_NONE
-var mute				= 3
+var mute				= 4
 var allow_overwrite		= false
 var indent				= []
 var handled				= []
@@ -27,12 +28,13 @@ func as_target(x, relative:=false):
 			return "./%s" % x.get_file()
 		"gd":
 			var base = x.get_basename()
-			return "res://%s/%s.gd" % [export_target, base.get_file()]
+			return export_prefix.path_join(export_target).path_join("%s.gd" % base.get_file())
 		_:
-			return "res://%s/%s" % [export_target, x.get_file()]
+			return export_prefix.path_join(export_target).path_join(x.get_file())
 
 func ensure_export_dir():
-	DirAccess.open("res://").make_dir(export_target)
+	msg("- Making export dir: %s/%s" % [export_prefix, export_target])
+	DirAccess.open(export_prefix).make_dir(export_target)
 
 func pack_scene(arg:Node) -> PackedScene:
 	msg("---- Packing Scene: %s" % arg)
@@ -106,7 +108,7 @@ func report_change(args):
 		var copied			= ResourceUID.path_to_uid(target)
 		var orig_deps		= ResourceLoader.get_dependencies(arg)
 		var copied_deps		= ResourceLoader.get_dependencies(target)
-		assert(len(orig_deps) == len(copied_deps), "Deps differ")
+		assert(len(orig_deps) == len(copied_deps), "Deps differ: %s / %s" % [orig_deps, copied_deps])
 
 		print("---- Change: %s -> %s" % [orig, copied])
 		for i in range(len(orig_deps)):
@@ -213,7 +215,7 @@ func exit_copy():
 
 func save_resource(res, new_path): # resource, str -> resource
 	if FileAccess.file_exists(new_path) and not self.allow_overwrite:
-		msg("Resource already exists: %s" % new_path)
+		msg("Resource already exists: %s" % new_path, 10)
 		return res
 
 	assert(res.resource_path, "Resource has no path: %s" % res)
@@ -261,7 +263,7 @@ func save_resource(res, new_path): # resource, str -> resource
 #  main logic --------------------------------------------------
 
 func copy_resource(arg): # str -> maybe[resource]
-	assert(typeof(arg) == TYPE_STRING, arg)
+	assert(typeof(arg) == TYPE_STRING, "Resource is not a string: %s" % arg)
 	if not enter_copy(arg):
 		return arg
 
@@ -286,7 +288,7 @@ func copy_resource(arg): # str -> maybe[resource]
 	return result
 
 func copy_scene(arg): # str -> resource
-	msg("-- Copying Scene: %s : %s" % [arg, type_string(typeof(arg))])
+	msg("-- Copying Scene: %s : %s" % [arg, type_string(typeof(arg))], 4)
 	var target		= as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
 	var inst		= res.instantiate()
@@ -303,6 +305,7 @@ func copy_scene(arg): # str -> resource
 	var repacked = pack_scene(inst)
 	inst.free()
 	repacked.resource_path = target
+	var prev = self.allow_overwrite
 	var result = save_resource(repacked, target)
 	return result
 

@@ -11,8 +11,12 @@ func _popup_menu(paths: PackedStringArray):
 
 func do_export(args):
 	print("---- Exporting Nodes: %s" % args)
+	indent				= []
+	handled				= []
+	save_flags			= ResourceSaver.FLAG_NONE
+	allow_overwrite		= true
 	ensure_export_dir()
-	var target				= as_target("pre_%s.tscn" % args[0].name)
+	var target				= as_target("%s.tscn" % args[0].name)
 	var scene				= pack_scene(args[0])
 	scene.resource_path		= target
 	save_resource(scene, scene.resource_path)
