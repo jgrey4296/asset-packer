@@ -36,3 +36,7 @@ theme = ExtResource("4_6rqat")
 text = "blah"
 
 [node name="Subscene" parent="." unique_id=483978570 instance=ExtResource("5_scst5")]
+
+[node name="NodeWithArray" type="Node" parent="." unique_id=2008751921]
+script = ExtResource("6_cw7yp")
+theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), null]
