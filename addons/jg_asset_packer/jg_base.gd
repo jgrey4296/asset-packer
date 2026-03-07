@@ -8,11 +8,11 @@ extends EditorContextMenuPlugin
 
 const export_relative	= false
 const cache_mode		= ResourceLoader.CACHE_MODE_IGNORE_DEEP
-const exclusions		= ["Node","Process","Thread Group","Physics Interpolation", "owner", "multiplayer"]
+const exclusions		= ["Node", "Process", "Thread Group", "Physics Interpolation",  "owner",  "multiplayer"]
 const skip_dirs			= "addons"
 const mod_name			= "%s-coll"
+var allow_overwrite		= true
 var save_flags			= ResourceSaver.FLAG_NONE
-var allow_overwrite		= false
 var handled				= []
 
 #  report --------------------------------------------------
@@ -83,25 +83,67 @@ func compare_trees(arg):
 		print("- %s" % x)
 
 func inspect_props(args):
-	print("---- Props of: %s [%s]" % [args[0], args[0].get_instance_id()])
-	for x in args[0].get_property_list():
-		match x.name:
-			"texture":
-				print("- %s" % x)
-				print("- %s" % args[0].get(x.name))
-			"script":
-				print("- %s" % x)
-				print("- %s" % args[0].get(x.name))
-			var name when name.get_extension() == "gd":
-				print("- %s" % x)
-				print("- %s" % args[0].get(x.name))
+	jg_utils.debug = 0
+	jg_utils.header("Props of: %s [%s]" % [args[0], args[0].get_instance_id()], 4)
+
+	var target			= args[0]
+	var props			= get_copy_props(target)
+	var max				= len(props)
+	jg_utils.imsg("Prop Count: %s" % max)
+	enter_copy(target)
+	for i in range(max):
+		var x = props[i]
+		match target.get(x.name):
+			var val when x.name == "script":
+				jg_utils.imsg("Script ... %s" % val, 1)
+				for prop in val.get_script_property_list():
+					jg_utils.imsg("- %s" % prop, 1)
+			0, null, "":
+				jg_utils.imsg("Null   ... %s" % x.name, 0)
+			var val when target.property_can_revert(x.name):
+				jg_utils.imsg("Revert ... %s : %s : %s" % [x.name, val, type_string(typeof(val))], 1)
+			var val:
+				jg_utils.imsg("Else   ... %s : %s" % [x.name, target.get(x.name)], 1)
+	jg_utils.header("----", 4)
+	enter_copy(target)
 
 #  predicates --------------------------------------------------
 
-func allow_prop(prop): # maybe[dict] -> bool
+func get_script_props(obj) -> Array:
+	if obj.get("script") == null:
+		return []
+
+	return Array(obj
+		.get("script").get_script_property_list()
+		.map(func(val): return val.name)
+
+		)
+
+func get_copy_props(obj) -> Array:
+	""" Get props that need to be copied
+
+	Includes any props that point to:
+	- resources,
+	- scripts,
+	- exported script props
+	"""
+	if obj == null: return []
+
+	var properties  = obj.get_property_list()
+	var sprops		= get_script_props(obj)
+	var allowed		= properties.filter(func(elem): return allow_prop(elem, sprops))
+	# print("Properties: %s" % [properties.map(func(elem): return elem.name)])
+	# print("Script Properties :%s" % [sprops])
+	# print("Allowed :%s" % [allowed.map(func(elem): return elem.name)])
+
+	return allowed
+
+func allow_prop(prop, script_props:=[]): # maybe[dict] -> bool
 	match prop:
 		null:
 			return false
+		{"name": var name, ..} when prop.name in script_props:
+			return true
 		{"name": var name, ..} when name.get_extension() == "gd":
 			return false
 		{"name": var name, ..} when name in exclusions:
@@ -257,8 +299,8 @@ func copy_godot_format(arg): # str -> resource
 
 func copy_gdscript(arg): # str -> resource:
 	jg_utils.header("Copying gdscript: %s" % arg.to_upper(), 3)
-	var target		= jg_utils.as_target(arg)
-	var res			= ResourceLoader.load(arg, "", cache_mode)
+	var target			= jg_utils.as_target(arg)
+	var res				= ResourceLoader.load(arg, "", cache_mode)
 	return save_resource(res, target)
 
 func copy_file(arg): # str -> resource
@@ -283,20 +325,31 @@ func handle_children(arg): # node -> none
 				var target	= jg_utils.as_target(path)
 				child.scene_file_path = target
 
-func handle_props(arg): # obj -> none
-	var props = arg.get_property_list()
-	for prop in props:
-		if not allow_prop(prop):
-			jg_utils.imsg("Skip Prop: %s" % prop.name.to_upper(), 0)
-			continue
+func handle_props(obj): # obj -> none
+	if is_instance_of(obj, Node) and obj.name == "NodeWithArray":
+		print("List Val: %s" % [obj.get("theList")])
 
-		match arg.get(prop.name):
-			var val when allow_resource(val):
+	var val		= null
+	var sprops = get_script_props(obj)
+	for prop in get_copy_props(obj):
+		match prop.name:
+			"script":
+				val = obj.get_script()
+			var name:
+				val = obj.get(name)
+
+		match val:
+			null: pass
+			_ when allow_resource(val):
 				jg_utils.imsg("prop: %s" % prop.name.to_upper(), 2)
 				match copy_resource(val.get_path()):
 					null: pass
+					var result when prop.name == "script":
+						jg_utils.imsg("Setting prop: %s -> %s -> %s" % [obj, prop.name.to_upper(), result], 2)
+						obj.set_script(result)
 					var result:
-						jg_utils.imsg("Setting prop: %s -> %s -> %s" % [arg, prop.name.to_upper(), result], 2)
-						arg.set(prop.name, result)
-			_:
-				pass
+						jg_utils.imsg("Setting prop: %s -> %s -> %s" % [obj, prop.name.to_upper(), result], 2)
+						obj.set(prop.name, result)
+			_ when prop.name in sprops:
+				jg_utils.imsg("A script prop: %s -> %s (%s)" % [prop.name, val, is_instance_valid(val)], 2)
+				obj.set(prop.name, val)

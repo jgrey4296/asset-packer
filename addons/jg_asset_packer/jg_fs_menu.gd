@@ -7,7 +7,7 @@ A FileSystem context menu plugin
 
 """
 
-var targets = []
+var targets				= []
 
 func _popup_menu(paths: PackedStringArray):
 	add_context_menu_item("Export as Addon", do_export)
@@ -42,8 +42,8 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 	jg_utils.msg("Target Addon Name: %s" % as_path, 3)
 	jg_utils.msg("Targets: %s" % targets, 3)
 
+	if (not jg_utils.ensure_export_dir()): pass
 	report_deps(targets)
-	jg_utils.ensure_export_dir()
 	for x in targets:
 		copy_resource(x)
 
@@ -59,9 +59,9 @@ func bundle_addon(name, prefix:="res://addons/", debug:=0):
 	save_flags				= ResourceSaver.FLAG_BUNDLE_RESOURCES
 	var as_res				= prefix.path_join(name)
 
+	if (not jg_utils.ensure_export_dir()): return
 	jg_utils.msg("Target Addon Name: %s" % as_res, 3)
 	jg_utils.msg("Targets: %s" % targets, 3)
-	jg_utils.ensure_export_dir()
 	for x in targets:
 		copy_resource(x)
 

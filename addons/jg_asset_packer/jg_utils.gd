@@ -11,13 +11,7 @@ static var debug			: int		= 0
 const INDENT_STR						= "  "
 static var indent_amt : int				= 0
 
-static func indent():
-	jg_utils.indent_amt += 1
-
-static func deindent():
-	jg_utils.indent_amt -= 1
-	if jg_utils.indent_amt < 0:
-		jg_utils.indent_amt = 0
+#  misc --------------------------------------------------
 
 static func as_target(x, relative:=false):
 	var prefix = jg_utils.export_prefix
@@ -31,9 +25,17 @@ static func as_target(x, relative:=false):
 		_:
 			return prefix.path_join(target).path_join(x.get_file())
 
-static func ensure_export_dir():
+static func ensure_export_dir() -> bool:
+	if DirAccess.open(jg_utils.export_prefix).dir_exists(jg_utils.export_target):
+		assert(false, "target already exists: %s" % jg_utils.export_prefix.path_join(jg_utils.export_target))
+		return false
+
+
 	msg("- Making export dir: %s/%s" % [export_prefix, export_target])
 	DirAccess.open(export_prefix).make_dir(export_target)
+	return true
+
+#  scene modification --------------------------------------------------
 
 static func pack_scene(arg:Node) -> PackedScene:
 	msg("---- Packing Scene: %s" % arg)
@@ -74,15 +76,25 @@ static func reset_owners(args):
 		else:
 			claim_children(arg.get_parent())
 
+#  logging --------------------------------------------------
+
+static func indent():
+	jg_utils.indent_amt += 1
+
+static func deindent():
+	jg_utils.indent_amt -= 1
+	if jg_utils.indent_amt < 0:
+		jg_utils.indent_amt = 0
+
 static func msg(msg:="", level:=0):
 	if level < debug:
 		return
 	print("%s" % msg)
 
-static func imsg(msg:="", level:=0):
+static func imsg(msg, level:=0):
 	""" msg, with indentation """
-	msg("%s : %s" % [INDENT_STR.repeat(jg_utils.indent_amt), msg], level)
+	msg("%s : %s" % [INDENT_STR.repeat(jg_utils.indent_amt), str(msg)], level)
 
-static func header(msg:="", level:=0):
+static func header(msg, level:=0):
 	var line = "-".repeat(level)
-	imsg("%s %s %s" % [line, msg, line], level)
+	imsg("%s %s %s" % [line, str(msg), line], level)

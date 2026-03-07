@@ -39,4 +39,4 @@ text = "blah"
 
 [node name="NodeWithArray" type="Node" parent="." unique_id=2008751921]
 script = ExtResource("6_cw7yp")
-theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), null]
+theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), 2]

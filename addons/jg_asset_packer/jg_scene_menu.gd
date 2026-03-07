@@ -10,6 +10,7 @@ var targets = []
 func _popup_menu(paths: PackedStringArray):
 	add_context_menu_item("Inspect Props", inspect_props)
 	add_context_menu_item("Export", do_export)
+	add_context_menu_item("Test", do_test)
 
 func do_export(args):
 	jg_utils.header("Exporting Nodes: %s" % args, 5)
@@ -35,7 +36,7 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 	jg_utils.msg("Target Addon Name: %s" % as_path, 3)
 	jg_utils.msg("Targets: %s" % targets, 3)
 
-	jg_utils.ensure_export_dir()
+	if not jg_utils.ensure_export_dir(): return
 	save_resource(scene, scene.resource_path)
 	assert(FileAccess.file_exists(target), "Scene doesnt exist: %s" % scene.resource_path)
 
@@ -44,3 +45,8 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 	report_handled()
 	report_change([target])
 	EditorInterface.get_resource_filesystem().scan()
+
+
+func do_test(args):
+	print("Target: %s" % args)
+	obj_copy_props(args[0])
