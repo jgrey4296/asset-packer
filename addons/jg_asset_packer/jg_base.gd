@@ -10,75 +10,10 @@ const export_relative	= false
 const cache_mode		= ResourceLoader.CACHE_MODE_IGNORE_DEEP
 const exclusions		= ["Node","Process","Thread Group","Physics Interpolation", "owner", "multiplayer"]
 const skip_dirs			= "addons"
-const INDENT_STR		= "->"
 const mod_name			= "%s-coll"
-var export_prefix		= "res://addons/"
-var export_target		= "test_export"
 var save_flags			= ResourceSaver.FLAG_NONE
-var mute				= 4
 var allow_overwrite		= false
-var indent				= []
 var handled				= []
-
-#  utils --------------------------------------------------
-
-func as_target(x, relative:=false):
-	match x.get_extension():
-		_ when relative:
-			return "./%s" % x.get_file()
-		"gd":
-			var base = x.get_basename()
-			return export_prefix.path_join(export_target).path_join("%s.gd" % base.get_file())
-		_:
-			return export_prefix.path_join(export_target).path_join(x.get_file())
-
-func ensure_export_dir():
-	msg("- Making export dir: %s/%s" % [export_prefix, export_target])
-	DirAccess.open(export_prefix).make_dir(export_target)
-
-func pack_scene(arg:Node) -> PackedScene:
-	msg("---- Packing Scene: %s" % arg)
-	if arg == null:
-		return null
-	var scene = to_scene(arg)
-	return scene
-
-func to_scene(node:Node) -> PackedScene:
-	if node == null:
-		return null
-	var scene = PackedScene.new()
-	match scene.pack(node):
-		OK: pass
-		var err: push_error("failed to pack scene")
-
-	return scene
-
-func claim_children(node):
-	var ignore = []
-	msg("Claim root: %s" % node)
-	for child in node.find_children("*"):
-		match child.scene_file_path:
-			"", null when child.owner not in ignore:
-				msg("Claiming: %s : %s : %s" % [child, child.scene_file_path, child.owner])
-				child.owner = node
-			"", null:
-				pass
-			_:
-				msg("ignoring: %s" % child)
-				ignore.append(child)
-				child.owner = node
-
-func reset_owners(args):
-	for arg in args:
-		if arg.get_parent() == null:
-			claim_children(arg)
-		else:
-			claim_children(arg.get_parent())
-
-func msg(msg:="", level:=0):
-	if level < mute:
-		return
-	print("%s : %s" % ["".join(self.indent), msg])
 
 #  report --------------------------------------------------
 
@@ -94,16 +29,16 @@ func report_deps(args, header:=true): # str -> None
 		var deps = ResourceLoader.get_dependencies(arg)
 		var uid  = ResourceUID.path_to_uid(arg)
 		if len(deps) == 0: continue
-		if header: print("---- (%s) deps of %s [%s]:" % [len(deps), arg, uid])
+		if header: jg_utils.header("(%s) deps of %s [%s]:" % [len(deps), arg, uid], 3)
 		for x in deps:
 			print("- %s" % x)
 			if "::::" in x: report_deps([x.split("::::")[1]], false)
 
-		if header: print("----\n")
+		if header: jg_utils.msg("----\n", 3)
 
 func report_change(args):
 	for arg in args:
-		var target			= as_target(arg)
+		var target			= jg_utils.as_target(arg)
 		var orig			= ResourceUID.path_to_uid(arg)
 		var copied			= ResourceUID.path_to_uid(target)
 		var orig_deps		= ResourceLoader.get_dependencies(arg)
@@ -124,7 +59,7 @@ func report_change(args):
 		print("---- Change: %s -> %s, %s -> %s" % [orig, copied, arg, target])
 
 func compare_trees(arg):
-	var target		= as_target(arg)
+	var target		= jg_utils.as_target(arg)
 	var orig_ids	= []
 	var copied_ids  = []
 	var shared		= []
@@ -189,7 +124,7 @@ func allow_resource(obj): # maybe[obj] -> bool
 		_ when obj.get_path() == "":   return false
 		_ when obj.get_path() == null: return false
 		_ when obj.get_path().contains(skip_dirs):
-			msg("- skipping addon: %s" % obj.get_path(), 4)
+			jg_utils.imsg("skipping addon: %s" % obj.get_path(), 4)
 			return false
 		_:
 			return true
@@ -197,25 +132,24 @@ func allow_resource(obj): # maybe[obj] -> bool
 #  enter/exit --------------------------------------------------
 
 func enter_copy(obj) -> bool:
-	# self.mute = 3
 	if obj in handled:
 		return false
 
-	msg()
-	msg("->")
+	jg_utils.msg()
+	jg_utils.msg("->")
 	handled.append(obj)
-	indent.append(INDENT_STR)
+	jg_utils.indent()
 	return true
 
 func exit_copy():
-	msg("<-")
-	indent.pop_back()
+	jg_utils.msg("<-")
+	jg_utils.deindent()
 
 #  core saving fn --------------------------------------------------
 
 func save_resource(res, new_path): # resource, str -> resource
 	if FileAccess.file_exists(new_path) and not self.allow_overwrite:
-		msg("Resource already exists: %s" % new_path, 10)
+		jg_utils.imsg("Resource already exists: %s" % new_path, 10)
 		return res
 
 	assert(res.resource_path, "Resource has no path: %s" % res)
@@ -225,25 +159,25 @@ func save_resource(res, new_path): # resource, str -> resource
 	res				= res.duplicate()
 	var target_ext  = new_path.get_extension()
 	var exts		= Array(ResourceSaver.get_recognized_extensions(res))
-	msg("Available Extensions for saving: %s" % ", ".join(exts), 1)
+	jg_utils.imsg("Available Extensions for saving: %s" % ", ".join(exts), 1)
 
 	match target_ext in exts:
 		_ when target_ext == "gd":
-			msg("- saving gdscript: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
+			jg_utils.imsg("saving gdscript: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
 			assert(ResourceSaver.save(res, new_path, self.save_flags) == OK, "Saving Script Failed: %s" % res)
 
 		true: # save using the resource saver
-			msg("- saving with resource saver: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
+			jg_utils.imsg("saving with resource saver: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
 			assert(ResourceSaver.save(res, new_path, self.save_flags) == OK, "Saving Resource Failed: %s" % res)
 			assert(FileAccess.file_exists(new_path), "New File doesn't exist: %s" % new_path)
 
 		false: # save using file access
-			msg("- saving using file access: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
+			jg_utils.imsg("saving using file access: %s (%s) -> %s " % [res_path, ResourceUID.path_to_uid(res_path), new_path], msg_level)
 			var data = FileAccess.get_file_as_bytes(res_path)
-			assert(len(data) > 0)
+			assert(len(data) > 0, "No data was read: %s" % res_path)
 			var file = FileAccess.open(new_path, FileAccess.WRITE)
-			assert(file != null, "Opening File to write failed: %s" % res)
-			assert(file.store_buffer(data), "Writing to File Failed: %s" % res)
+			assert(file != null, "Opening Target File to write failed: %s" % new_path)
+			assert(file.store_buffer(data), "Writing to File Failed: %s" % new_path)
 			file.close()
 
 
@@ -252,7 +186,7 @@ func save_resource(res, new_path): # resource, str -> resource
 	# EditorInterface.get_resource_filesystem().reimport_files([ new_path ])
 	# var reloaded = load(new_path)
 	res.take_over_path(new_path)
-	res.resource_path = as_target(new_path, export_relative)
+	res.resource_path = jg_utils.as_target(new_path, export_relative)
 
 	var new_uid = ResourceUID.path_to_uid(new_path)
 	assert(init_uid != new_uid, "UID didn't change: %s" % new_path)
@@ -284,78 +218,85 @@ func copy_resource(arg): # str -> maybe[resource]
 			result = copy_file(arg)
 
 	exit_copy()
-	msg()
+	jg_utils.msg()
 	return result
 
 func copy_scene(arg): # str -> resource
-	msg("-- Copying Scene: %s : %s" % [arg, type_string(typeof(arg))], 4)
-	var target		= as_target(arg)
+	jg_utils.header("Copying Scene: %s : %s" % [arg.to_upper(), type_string(typeof(arg))], 4)
+	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
 	var inst		= res.instantiate()
 	inst.name		= mod_name % inst.name
 
 	var marker		= Node.new()
 	marker.name		= "JGCollectMarker"
-	msg("- Added Marker to: %s" % inst, 4)
-	inst.add_child(marker)
-	marker.owner = inst
 
 	handle_props(inst)
 	handle_children(inst)
-	var repacked = pack_scene(inst)
-	inst.free()
+
+	jg_utils.imsg("Added Marker to: %s" % inst, 4)
+	inst.add_child(marker)
+	marker.owner = inst
+
+	var repacked = jg_utils.pack_scene(inst)
+	# inst.free()
 	repacked.resource_path = target
 	var prev = self.allow_overwrite
+
+
 	var result = save_resource(repacked, target)
 	return result
 
 func copy_godot_format(arg): # str -> resource
-	msg("-- Copying godot resource: %s" % arg)
-	var target		= as_target(arg)
+	jg_utils.header("Copying godot resource: %s" % arg.to_upper(), 3)
+	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
-	msg("- Loaded GD Format: %s" % res, 4)
+	jg_utils.imsg("- Loaded GD Format: %s" % res, 2)
 	handle_props(res)
 	return save_resource(res, target)
 
 func copy_gdscript(arg): # str -> resource:
-	msg("-- Copying gdscript: %s" % arg)
-	var target		= as_target(arg)
+	jg_utils.header("Copying gdscript: %s" % arg.to_upper(), 3)
+	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
 	return save_resource(res, target)
 
 func copy_file(arg): # str -> resource
-	msg("-- Copying file: %s" % arg, 4)
-	var target		= as_target(arg)
+	jg_utils.header("Copying file: %s" % arg.to_upper(), 3)
+	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
-	msg("- Loaded File: %s" % res, 4)
+	jg_utils.imsg("Loaded File: %s" % res, 2)
 	return save_resource(res, target)
 
 func handle_children(arg): # node -> none
 	var children = arg.find_children("*", "", false)
 	for child in children:
-		msg("- child: %s" % child)
+		jg_utils.header("Child: %s" % child.name.to_upper(), 2)
 		handle_props(child)
 		match child.scene_file_path:
 			null, "":
+				enter_copy(child)
 				handle_children(child)
+				exit_copy()
 			var path:
 				copy_resource(path)
-				var target	= as_target(path)
+				var target	= jg_utils.as_target(path)
 				child.scene_file_path = target
 
 func handle_props(arg): # obj -> none
 	var props = arg.get_property_list()
 	for prop in props:
 		if not allow_prop(prop):
+			jg_utils.imsg("Skip Prop: %s" % prop.name.to_upper(), 0)
 			continue
 
 		match arg.get(prop.name):
 			var val when allow_resource(val):
-				msg("- prop: %s" % prop.name, 2)
+				jg_utils.imsg("prop: %s" % prop.name.to_upper(), 2)
 				match copy_resource(val.get_path()):
 					null: pass
 					var result:
-						msg("Setting prop: %s -> %s -> %s" % [arg, prop.name, result], 2)
+						jg_utils.imsg("Setting prop: %s -> %s -> %s" % [arg, prop.name.to_upper(), result], 2)
 						arg.set(prop.name, result)
 			_:
 				pass
