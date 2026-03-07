@@ -2,33 +2,116 @@
 
 [ext_resource type="Script" uid="uid://tleymiqlnf4t" path="res://addons/jg_asset_packer/jg_popup.gd" id="1_5erff"]
 
-[node name="JgPopup" type="Popup" unique_id=1090549837]
+[node name="JgPopup" type="ConfirmationDialog" unique_id=1930262069]
 oversampling_override = 1.0
-size = Vector2i(200, 100)
+position = Vector2i(0, 36)
+size = Vector2i(448, 257)
 visible = true
 script = ExtResource("1_5erff")
 
-[node name="Control" type="Control" parent="." unique_id=2042433213]
-layout_mode = 3
-anchors_preset = 15
+[node name="control" type="VBoxContainer" parent="." unique_id=1301282774]
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 208.0
 grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LineEdit" type="LineEdit" parent="Control" unique_id=1007509229]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -15.5
-offset_right = 100.0
-offset_bottom = 15.5
-grow_horizontal = 2
-grow_vertical = 2
-placeholder_text = "New Addon Name"
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 alignment = 1
+
+[node name="name" type="Control" parent="control" unique_id=1042180223]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="label" type="Label" parent="control/name" unique_id=1300490574]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 106.0
+offset_bottom = 11.5
+grow_vertical = 2
+text = "Create Name:"
+vertical_alignment = 1
+
+[node name="value" type="LineEdit" parent="control/name" unique_id=1007509229]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -15.5
+offset_bottom = 15.5
+grow_horizontal = 0
+grow_vertical = 2
+placeholder_text = "MyCollectedAddon"
+alignment = 2
+
+[node name="prefix" type="Control" parent="control" unique_id=1899726647]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+
+[node name="label" type="Label" parent="control/prefix" unique_id=522087842]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 46.0
+offset_bottom = 11.5
+grow_vertical = 2
+text = "Prefix"
+vertical_alignment = 1
+
+[node name="value" type="LineEdit" parent="control/prefix" unique_id=2089097557]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -68.5
+offset_top = -15.5
+offset_bottom = 15.5
+grow_horizontal = 0
+grow_vertical = 2
+placeholder_text = "res://addons/"
+
+[node name="debug" type="Control" parent="control" unique_id=1141967583]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="label" type="Label" parent="control/debug" unique_id=868931011]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 50.0
+offset_bottom = 11.5
+grow_vertical = 2
+text = "Debug"
+vertical_alignment = 1
+
+[node name="value" type="SpinBox" parent="control/debug" unique_id=688031453]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -86.5
+offset_top = -15.5
+offset_bottom = 15.5
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 10.0
+alignment = 2
