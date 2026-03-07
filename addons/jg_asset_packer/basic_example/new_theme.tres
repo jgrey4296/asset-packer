@@ -1,9 +1,0 @@
-[gd_resource type="Theme" format=3 uid="uid://brsf1vkywcm5f"]
-
-[ext_resource type="FontFile" uid="uid://b1fep15qu52rr" path="res://example/Kenney Bold.ttf" id="1_iln81"]
-
-[resource]
-default_font = ExtResource("1_iln81")
-Button/colors/font_color = Color(0.61590314, 0.9999998, 0.0027007128, 1)
-Label/colors/font_color = Color(1, 0.11704811, 0.14165807, 1)
-Label/fonts/font = ExtResource("1_iln81")

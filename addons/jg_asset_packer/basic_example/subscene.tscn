@@ -1,5 +1,0 @@
-[gd_scene format=3 uid="uid://bspco867hijt2"]
-
-[node name="Subscene" type="Node2D" unique_id=483978570]
-
-[node name="blah" type="Node2D" parent="." unique_id=446255488]
