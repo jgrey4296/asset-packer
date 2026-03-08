@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bjmli1rqtk4fv"
-path="res://.godot/imported/corn__x1_iconic_png_1354829785.png-55bf897e3d79ba0ef1ec32bb2478d0db.ctex"
+uid="uid://b0wthspotfj6d"
+path="res://.godot/imported/apple__x1_iconic_png_1354829396.png-f908d2d804f49fccba23a966f126e27c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://basic_example/corn__x1_iconic_png_1354829785.png"
-dest_files=["res://.godot/imported/corn__x1_iconic_png_1354829785.png-55bf897e3d79ba0ef1ec32bb2478d0db.ctex"]
+source_file="res://addons/excluded_from_collection/apple__x1_iconic_png_1354829396.png"
+dest_files=["res://.godot/imported/apple__x1_iconic_png_1354829396.png-f908d2d804f49fccba23a966f126e27c.ctex"]
 
 [params]
 

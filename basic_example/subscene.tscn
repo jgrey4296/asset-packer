@@ -1,5 +1,8 @@
 [gd_scene format=3 uid="uid://bspco867hijt2"]
 
+[ext_resource type="Texture2D" uid="uid://bjmli1rqtk4fv" path="res://basic_example/images/corn__x1_iconic_png_1354829785.png" id="1_rsacf"]
+
 [node name="Subscene" type="Node2D" unique_id=483978570]
 
-[node name="blah" type="Node2D" parent="." unique_id=446255488]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=27254907]
+texture = ExtResource("1_rsacf")
