@@ -9,16 +9,24 @@
 
 [node name="Example" type="Node2D" unique_id=444489942]
 
-[node name="the corn" type="Sprite2D" parent="." unique_id=1335244298]
+[node name="Textures" type="Node2D" parent="." unique_id=680622945]
+
+[node name="the corn" type="Sprite2D" parent="Textures" unique_id=1335244298]
 position = Vector2(35, 42)
 texture = ExtResource("1_scst5")
 
-[node name="the apple" type="Sprite2D" parent="the corn" unique_id=575690808]
+[node name="the apple" type="Sprite2D" parent="Textures/the corn" unique_id=575690808]
 position = Vector2(67, 51)
 texture = ExtResource("2_wmyp6")
 
-[node name="NodeWithCode" type="Node2D" parent="." unique_id=1680158724]
+[node name="Code" type="Node2D" parent="." unique_id=813058061]
+
+[node name="NodeWithCode" type="Node2D" parent="Code" unique_id=1680158724]
 script = ExtResource("3_wmyp6")
+
+[node name="NodeWithArray" type="Node" parent="Code" unique_id=2008751921]
+script = ExtResource("6_cw7yp")
+theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), 2]
 
 [node name="Control" type="Control" parent="." unique_id=274719651]
 layout_mode = 3
@@ -36,7 +44,3 @@ theme = ExtResource("4_6rqat")
 text = "blah"
 
 [node name="Subscene" parent="." unique_id=483978570 instance=ExtResource("5_scst5")]
-
-[node name="NodeWithArray" type="Node" parent="." unique_id=2008751921]
-script = ExtResource("6_cw7yp")
-theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), 2]

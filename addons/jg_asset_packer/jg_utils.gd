@@ -87,7 +87,7 @@ static func deindent():
 		jg_utils.indent_amt = 0
 
 static func msg(msg:="", level:=0):
-	if level < debug:
+	if level <= debug:
 		return
 	print("%s" % msg)
 

@@ -33,6 +33,7 @@ func do_describe(args):
 
 func export_addon(name, prefix:="res://addons/", debug:=0):
 	jg_utils.debug			= debug
+	jg_utils.indent_amt     = 0
 	jg_utils.export_prefix  = prefix
 	jg_utils.export_target  = name
 	handled					= []
@@ -53,6 +54,7 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 
 func bundle_addon(name, prefix:="res://addons/", debug:=0):
 	jg_utils.debug			= debug
+	jg_utils.indent_amt     = 0
 	jg_utils.export_prefix  = prefix
 	jg_utils.export_target  = name
 	handled					= []

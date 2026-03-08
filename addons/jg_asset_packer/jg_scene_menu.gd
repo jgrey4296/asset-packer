@@ -1,4 +1,5 @@
 #  jg_scene_menu.gd -*- mode: gdscript -*-
+@tool
 class_name jg_scene_menu
 extends JG_Base_Menu
 """
@@ -18,7 +19,6 @@ func do_export(args):
 	var popup	= load("res://addons/jg_asset_packer/jg_popup.tscn").instantiate()
 	popup.addon_named.connect(export_addon)
 	EditorInterface.popup_dialog_centered(popup)
-
 
 func export_addon(name, prefix:="res://addons/", debug:=0):
 	jg_utils.debug			= debug
@@ -46,7 +46,14 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 	report_change([target])
 	EditorInterface.get_resource_filesystem().scan()
 
-
 func do_test(args):
 	print("Target: %s" % args)
-	obj_copy_props(args[0])
+	var propname = "theList"
+	# obj_copy_props(args[0])
+
+	match [1, 2]:
+		[var first, var second]:
+			print("first: %s" % first)
+			print("second: %s" % second)
+		_:
+			pass
