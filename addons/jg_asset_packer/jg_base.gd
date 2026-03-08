@@ -4,17 +4,17 @@ class_name JG_Base_Menu
 extends EditorContextMenuPlugin
 """
 
-TODO deal with script inheritance
+TODO on export, reparse scripts and modify and 'extends "res://..." lines
 """
 
 const export_relative	= false
 const cache_mode		= ResourceLoader.CACHE_MODE_IGNORE_DEEP
 const exclusions		= ["Node", "Process", "Thread Group", "Physics Interpolation",  "owner",  "multiplayer"]
-const skip_dirs			= "addons"
 const mod_name			= "%s-coll"
 var allow_overwrite		= true
 var save_flags			= ResourceSaver.FLAG_NONE
 var handled				= []
+var skip_dirs			= "addons"
 
 #  report --------------------------------------------------
 
@@ -304,6 +304,12 @@ func copy_gdscript(arg): # str -> resource:
 	jg_utils.header("Copying gdscript: %s" % arg.to_upper(), 3)
 	var target			= jg_utils.as_target(arg)
 	var res				= ResourceLoader.load(arg, "", cache_mode)
+	match res.get_base_script():
+		null: pass
+		var superscript when is_instance_valid(superscript) and allow_resource(superscript):
+			jg_utils.imsg("Script has a relevant super: %s : %s" % [res, superscript])
+			copy_gdscript(superscript.resource_path)
+
 	return save_resource(res, target)
 
 func copy_file(arg): # str -> resource
@@ -357,7 +363,7 @@ func handle_props(obj): # obj -> none
 			pass
 		var script:
 			jg_utils.imsg("Setting Script: %s -> %s -> %s" % [obj, "script", script], 2)
-			obj.set("script", script)
+			obj.set_script(script)
 
 	# Then reapply script props:
 	for pair in sprop_vals:

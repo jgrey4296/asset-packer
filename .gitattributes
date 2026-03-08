@@ -6,6 +6,8 @@
 /addons !export-ignore
 /addons/jg_asset_packer !export-ignore
 /addons/jg_asset_packer/** !export-ignore
+/basic_example/ !export-ignore
+/basic_example/** !export-ignore
 
 # Git LFS Tracking (Assets)
 # 3D Models

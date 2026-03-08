@@ -4,13 +4,14 @@ class_name JGPopup
 extends ConfirmationDialog
 """
 
+TODO: allow selection of types to copy/exclude
 """
 
 static var default_name		: String	= "MyCollectedAddon"
 static var default_debug	: int		= 0
 static var default_prefix	: String	= "res://addons/"
 
-signal addon_named(text:String, debug:int)
+signal addon_named(text:String, prefix:String, debug:int)
 
 
 func _init():
@@ -25,14 +26,12 @@ func _ready() -> void:
 func complete():
 	JGPopup.default_debug	= $control/debug/value.value
 	match $control/prefix/value.text:
-		"":
-			pass
+		"": pass
 		var prefix:
-			JGPopup.default_prefix  = $control/prefix/value.text
+			JGPopup.default_prefix  = prefix
 
 	match $control/name/value.text:
-		"":
-			pass
+		"": pass
 		var text:
 			JGPopup.default_name = text
 

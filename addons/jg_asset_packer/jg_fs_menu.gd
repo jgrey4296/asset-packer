@@ -31,11 +31,12 @@ func do_bundle(args):
 func do_describe(args):
 	report_deps(args)
 
-func export_addon(name, prefix:="res://addons/", debug:=0):
+func export_addon(name, prefix, debug:=0):
 	jg_utils.debug			= debug
 	jg_utils.indent_amt     = 0
 	jg_utils.export_prefix  = prefix
 	jg_utils.export_target  = name
+
 	handled					= []
 	save_flags				= ResourceSaver.FLAG_NONE
 	var as_path				= prefix.path_join(name)
@@ -52,11 +53,12 @@ func export_addon(name, prefix:="res://addons/", debug:=0):
 	report_change(targets)
 	EditorInterface.get_resource_filesystem().scan()
 
-func bundle_addon(name, prefix:="res://addons/", debug:=0):
+func bundle_addon(name, prefix, debug:=0):
 	jg_utils.debug			= debug
-	jg_utils.indent_amt     = 0
+	jg_utils.indent_amt		= 0
 	jg_utils.export_prefix  = prefix
 	jg_utils.export_target  = name
+
 	handled					= []
 	save_flags				= ResourceSaver.FLAG_BUNDLE_RESOURCES
 	var as_res				= prefix.path_join(name)

@@ -1,8 +1,9 @@
+class_name NodeMiddleInheritor
 extends Node2D
 
 @export var blah = "bloo"
 
-# Called when the node enters the scene tree for the first time.
+# Called when the node enters the scene tree feor the first time.
 func _ready() -> void:
 	pass # Replace with function body.
 

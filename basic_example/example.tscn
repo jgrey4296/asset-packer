@@ -31,8 +31,6 @@ theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), 2]
 
 [node name="NodeWithIneritance" type="Node2D" parent="Code" unique_id=1830066138]
 script = ExtResource("5_c0xyk")
-aweg = null
-blah = null
 
 [node name="Control" type="Control" parent="." unique_id=274719651]
 layout_mode = 3

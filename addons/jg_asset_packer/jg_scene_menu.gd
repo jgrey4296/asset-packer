@@ -20,15 +20,18 @@ func do_export(args):
 	popup.addon_named.connect(export_addon)
 	EditorInterface.popup_dialog_centered(popup)
 
-func export_addon(name, prefix:="res://addons/", debug:=0):
+func export_addon(name, prefix, debug:=0):
 	jg_utils.debug			= debug
-	jg_utils.export_target  = prefix
+	jg_utils.indent_amt     = 0
+	jg_utils.export_prefix  = prefix
+	jg_utils.export_target  = name
+
 	handled					= []
 	save_flags				= ResourceSaver.FLAG_NONE
 	allow_overwrite			= true
 	var as_path				= prefix.path_join(name)
 
-
+	# Create a temp scene
 	var target				= jg_utils.as_target("%s.tscn" % targets[0].name)
 	var scene				= jg_utils.pack_scene(targets[0])
 	scene.resource_path		= target
