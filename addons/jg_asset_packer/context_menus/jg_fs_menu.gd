@@ -11,9 +11,9 @@ var targets				= []
 
 func _popup_menu(paths: PackedStringArray):
 	# TODO if paths are scenes...
-	add_context_menu_item("Export as Addon", popup_export)
-	add_context_menu_item("Bundle Addon", popup_bundle)
-	add_context_menu_item("Describe Dependencies", do_describe)
+	add_context_menu_item("Collect Resources as Addon", popup_export)
+	add_context_menu_item("Bundle Resources as Addon", popup_bundle)
+	add_context_menu_item("List Transitive Dependencies", do_describe)
 
 func popup_export(args):
 	jg_utils.header("Exporting: %s" % args, 4)
