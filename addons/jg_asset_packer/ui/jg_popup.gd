@@ -13,15 +13,27 @@ static var default_prefix	: String	= "res://addons/"
 
 signal addon_named(text:String, prefix:String, debug:int)
 
+var baseDict = {
+	"Scenes"	: [],
+	"Scripts"	: [],
+	"Textures"  : [],
+	"Fonts"		: [],
+	}
 
 func _init():
 	close_requested.connect(hide)
 
 func _ready() -> void:
+	# TODO: if name already exists in prefix, adjust it
 	$control/name/value.placeholder_text	= JGPopup.default_name
 	$control/prefix/value.placeholder_text  = JGPopup.default_prefix
 	$control/debug/value.value				= JGPopup.default_debug
+	$control/SceneResources.list_resources(baseDict)
 	confirmed.connect(complete)
+
+func set_resource_list(theDict) -> void:
+	jg_utils.msg("Setting: %s" % theDict, 0)
+	$control/SceneResources.list_resources(theDict)
 
 func complete():
 	JGPopup.default_debug	= $control/debug/value.value
@@ -35,7 +47,7 @@ func complete():
 		var text:
 			JGPopup.default_name = text
 
-	print("Values: %s %s" % [JGPopup.default_prefix.path_join(JGPopup.default_name), JGPopup.default_debug])
+	jg_utils.msg("Values: %s %s" % [JGPopup.default_prefix.path_join(JGPopup.default_name), JGPopup.default_debug], 0)
 	addon_named.emit(
 		JGPopup.default_name,
 		JGPopup.default_prefix,

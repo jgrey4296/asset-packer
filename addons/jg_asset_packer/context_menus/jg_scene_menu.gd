@@ -10,15 +10,16 @@ var targets = []
 
 func _popup_menu(paths: PackedStringArray):
 	add_context_menu_item("Inspect Props", inspect_props)
-	add_context_menu_item("Export", do_export)
+	add_context_menu_item("Export", popup_export)
 	add_context_menu_item("Test", do_test)
 
-func do_export(args):
+func popup_export(args):
 	jg_utils.header("Exporting Nodes: %s" % args, 5)
 	targets = args
-	var popup	= load("res://addons/jg_asset_packer/jg_popup.tscn").instantiate()
+	var popup	= load("res://addons/jg_asset_packer/ui/jg_popup.tscn").instantiate()
 	popup.addon_named.connect(export_addon)
 	EditorInterface.popup_dialog_centered(popup)
+	popup.set_resource_list({})
 
 func export_addon(name, prefix, debug:=0):
 	jg_utils.debug			= debug

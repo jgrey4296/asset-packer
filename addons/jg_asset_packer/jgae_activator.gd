@@ -6,9 +6,9 @@ extends EditorPlugin
 
 """
 var fs_slot		= EditorContextMenuPlugin.CONTEXT_SLOT_FILESYSTEM
-var fs_menu		= preload("jg_fs_menu.gd").new()
-var st_slot = EditorContextMenuPlugin.CONTEXT_SLOT_SCENE_TREE
-var scene_menu = preload("jg_scene_menu.gd").new()
+var fs_menu		= preload("context_menus/jg_fs_menu.gd").new()
+var st_slot		= EditorContextMenuPlugin.CONTEXT_SLOT_SCENE_TREE
+var scene_menu  = preload("context_menus/jg_scene_menu.gd").new()
 
 func _enter_tree():
 	print("Activating jg_asset_packer")

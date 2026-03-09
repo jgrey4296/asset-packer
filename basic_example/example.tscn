@@ -9,8 +9,12 @@
 [ext_resource type="Script" uid="uid://cyinbjlsmt2kl" path="res://basic_example/code/node_with_array.gd" id="6_cw7yp"]
 
 [node name="Example" type="Node2D" unique_id=444489942]
+editor_description = "This is an example scene for jg_asset_packer.
+It contains a number of nodes with resources,
+which need to be copied to the exported addon."
 
 [node name="Textures" type="Node2D" parent="." unique_id=680622945]
+editor_description = "These nodes demonstrate that the source files for textures are copied."
 
 [node name="the corn" type="Sprite2D" parent="Textures" unique_id=1335244298]
 position = Vector2(35, 42)
@@ -21,6 +25,8 @@ position = Vector2(67, 51)
 texture = ExtResource("2_wmyp6")
 
 [node name="Code" type="Node2D" parent="." unique_id=813058061]
+editor_description = "These nodes demonstrate various gd-script related exports.
+"
 
 [node name="NodeWithCode" type="Node2D" parent="Code" unique_id=1680158724]
 script = ExtResource("3_wmyp6")
@@ -33,6 +39,7 @@ theList = [true, 23.2, Color(2.0214916e-06, 0.5893299, 0.26952928, 1), 2]
 script = ExtResource("5_c0xyk")
 
 [node name="Control" type="Control" parent="." unique_id=274719651]
+editor_description = "These nodes demonstrate themes and the related font file are copied"
 layout_mode = 3
 anchors_preset = 0
 offset_right = 285.0
@@ -48,4 +55,5 @@ theme = ExtResource("4_6rqat")
 text = "blah"
 
 [node name="Subscene" parent="." unique_id=483978570 instance=ExtResource("5_scst5")]
+editor_description = "This demonstrates that a related scene is also copied, with everything in that scene also exported."
 position = Vector2(304, 45)

@@ -5,6 +5,7 @@ extends EditorContextMenuPlugin
 """
 
 TODO on export, reparse scripts and modify and 'extends "res://..." lines
+TODO when copying, if the target already exists, load and return that instead, *not* return arg
 """
 
 const export_relative	= false
@@ -26,16 +27,12 @@ func report_handled():
 	print()
 
 func report_deps(args, header:=true): # str -> None
-	for arg in args:
-		var deps = ResourceLoader.get_dependencies(arg)
-		var uid  = ResourceUID.path_to_uid(arg)
-		if len(deps) == 0: continue
-		if header: jg_utils.header("(%s) deps of %s [%s]:" % [len(deps), arg, uid], 3)
-		for x in deps:
-			print("- %s" % x)
-			if "::::" in x: report_deps([x.split("::::")[1]], false)
-
-		if header: jg_utils.msg("----\n", 3)
+	var deps = walk_resources(args)
+	jg_utils.header("Deps of %s:" % [args], 4)
+	for key in deps:
+		jg_utils.msg("---- %s (%s):" % [key, len(deps[key])], 3)
+		for val in deps[key]:
+			jg_utils.msg("- %s" % val, 3)
 
 func report_change(args):
 	for arg in args:
@@ -244,6 +241,31 @@ func save_resource(res, new_path): # resource, str -> resource
 
 #  main logic --------------------------------------------------
 
+func walk_resources(args) -> Dictionary:
+	""" for listing resources before copy
+
+	TODO: handle transitive deps
+	"""
+	var result		= {"Misc" : []}
+	var remaining	= Array(args)
+	var found		= []
+	while not remaining.is_empty():
+		var curr = remaining.pop_front()
+		if curr in found:
+			continue
+		found.append(curr)
+		result["Misc"].append(curr.get_file())
+		var deps = ResourceLoader.get_dependencies(curr)
+		if len(deps) == 0: continue
+		for x in deps:
+			if "::" in x:
+				var fpath = x.split("::")[2]
+				remaining.push_back(fpath)
+
+	result["Misc"].sort()
+
+	return result
+
 func copy_resource(arg): # str -> maybe[resource]
 	assert(typeof(arg) == TYPE_STRING, "Resource is not a string: %s" % arg)
 	if not enter_copy(arg):
@@ -255,7 +277,7 @@ func copy_resource(arg): # str -> maybe[resource]
 		"tscn","scn":
 			result = copy_scene(arg)
 		_ when self.save_flags == ResourceSaver.FLAG_BUNDLE_RESOURCES:
-			print("Skipping on collect: %s" % arg)
+			print("Bundling: %s" % arg)
 			exit_copy()
 			return arg
 		"tres", "res":
