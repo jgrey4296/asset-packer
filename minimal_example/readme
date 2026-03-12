@@ -1,8 +1,0 @@
-This directory is a minimal example for asset exporting.
-
-The Main scene, `minimal.tscn`, contains some basic uses of resources.
-When it is exported, *everything* in this directory, apart from this readme,
-will be duplicated into the target addon location.
-
-Any reference to a resource in the file
-is modified to refer to the duplicated resource instead.
