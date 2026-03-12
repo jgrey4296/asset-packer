@@ -1,40 +1,17 @@
 ## repo-layout.md -*- mode: gfm-mode -*-
 
-# Repo Layout
+# Repo Layout of jg_asset_packer
 
-## {Root}. 
-The root of the workspace.
-Where config files go. 
+The main code lives in `addons/jg_asset_packer`.
+As a godot editor plugin, in has a `plugin.cfg` to activate it.
 
-# {Root}/.temp
-Where temporary and generated files live.
-.temp can be deleted and rebuilt from source and dependencies.
+The main logic lives in the `context_menus` classes,
+with `ui` providing the popup ui to customize the export.
 
-## {Root}/.tasks
-Where polyglot tasks are installed, along with with pre-commit hooks, custom gradle tasks, etc.
+An example is provided in `basic_example`, which when exported will flatten
+the resources in the `code`, `fonts` and `images` directories.
 
-## {Root}/src
-All source code lives here.
-Primary languages (dotnet, elixir, python, rust, kotlin, godot) are directly here. 
+The `VERSION.toml` file is used with [version manager](https://crates.io/crates/version-manager).
 
-## {Root}/{project name}
-The primary python module that typically stitches everything together.
-
-## {Root}/src/_{book, changes, docfx, epub, sphinx, tex}
-Documentation sources.
-
-## {Root}/src/_ai_and_logic
-For utility languges like clingo, ceptre, instal, prolog, rego, soar and z3.
-
-## {Root}/src/_music
-Utility langages for making sound. eg: csound, supercollider, faust.
-
-## {Root}/src/_utilities
-Utility code like octave calculations, symbolic math manipulations,
-statemachine and uml diagram generators.
-
-## {Root}/src/__tests
-Integration tests between workspace modules.
-
-## {Root}/src/__notes
-Reference notes for the use languages/tools used in the workspace.
+`.tasks` provide scripts for various chores.
+`screenshots` provide screenshots of the editor plugin in use.

@@ -6,41 +6,41 @@ extends JG_Base_Menu
 
 """
 
+
 var targets = []
 
 func _popup_menu(paths: PackedStringArray):
-	add_context_menu_item("Inspect Props", inspect_props)
-	add_context_menu_item("Export", popup_export)
-	add_context_menu_item("Test", do_test)
+	add_context_menu_item("Export as Addon", popup_export)
 
 func popup_export(args):
-	jg_utils.header("Exporting Nodes: %s" % args, 5)
+	jg_utils.header("Exporting Nodes: %s" % args, Level.USER)
 	targets = args
 	var popup	= load("res://addons/jg_asset_packer/ui/jg_popup.tscn").instantiate()
 	popup.addon_named.connect(export_addon)
 	EditorInterface.popup_dialog_centered(popup)
 	popup.set_resource_list({})
 
-func export_addon(name, prefix, debug:=0):
+func export_addon(name, prefix, allowed, debug:Level=Level.USER):
+	var prev_debug = jg_utils.debug
 	jg_utils.debug			= debug
-	jg_utils.indent_amt     = 0
-	jg_utils.export_prefix  = prefix
-	jg_utils.export_target  = name
+	jg_utils.reset_indent()
+	jg_utils.set_prefix_and_target(prefix, name)
 
-	handled					= []
-	save_flags				= ResourceSaver.FLAG_NONE
-	allow_overwrite			= true
-	var as_path				= prefix.path_join(name)
+	handled				= []
+	save_flags			= ResourceSaver.FLAG_NONE
+	allow_overwrite		= true
+	resource_whitelist  = allowed
+	var as_path			= prefix.path_join(name)
 
 	# Create a temp scene
 	var target				= jg_utils.as_target("%s.tscn" % targets[0].name)
 	var scene				= jg_utils.pack_scene(targets[0])
 	scene.resource_path		= target
 
-	jg_utils.msg("Target Addon Name: %s" % as_path, 3)
-	jg_utils.msg("Targets: %s" % targets, 3)
+	jg_utils.msg("Target Addon Name: %s" % as_path, Level.USER)
+	jg_utils.msg("Targets: %s" % targets, Level.USER)
 
-	if not jg_utils.ensure_export_dir(): return
+	if not jg_utils.ensure_export_dir(prefix, name): pass
 	save_resource(scene, scene.resource_path)
 	assert(FileAccess.file_exists(target), "Scene doesnt exist: %s" % scene.resource_path)
 
@@ -49,15 +49,6 @@ func export_addon(name, prefix, debug:=0):
 	report_handled()
 	report_change([target])
 	EditorInterface.get_resource_filesystem().scan()
-
-func do_test(args):
-	print("Target: %s" % args)
-	var propname = "theList"
-	# obj_copy_props(args[0])
-
-	match [1, 2]:
-		[var first, var second]:
-			print("first: %s" % first)
-			print("second: %s" % second)
-		_:
-			pass
+	jg_utils.debug = prev_debug
+	resource_whitelist.clear()
+	jg_utils.header("Exported", Level.USER)

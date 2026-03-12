@@ -1,4 +1,0 @@
-## .shellcheckrc -*- mode: Conf[Space] -*-
-
-disable=SC1091,SC2034
-# enable=

@@ -8,13 +8,16 @@ TODO on export, reparse scripts and modify and 'extends "res://..." lines
 TODO when copying, if the target already exists, load and return that instead, *not* return arg
 """
 
+const Level				= jg_utils.LOG_LEVEL
 const export_relative	= false
 const cache_mode		= ResourceLoader.CACHE_MODE_IGNORE_DEEP
 const exclusions		= ["Node", "Process", "Thread Group", "Physics Interpolation",  "owner",  "multiplayer"]
 const mod_name			= "%s-coll"
+var registered_groups	= EditorInterface.get_editor_settings().get_setting(jg_utils.setting_named("Collection/Groups"))
 var allow_overwrite		= true
 var save_flags			= ResourceSaver.FLAG_NONE
 var handled				= []
+var resource_whitelist  = []
 var skip_dirs			= "addons"
 
 #  report --------------------------------------------------
@@ -27,12 +30,15 @@ func report_handled():
 	print()
 
 func report_deps(args, header:=true): # str -> None
+	registered_groups	= EditorInterface.get_editor_settings().get_setting(jg_utils.setting_named("Collection/Groups"))
+	assert(registered_groups, "No registered groups")
+	var Log_At = Level.USER
 	var deps = walk_resources(args)
-	jg_utils.header("Deps of %s:" % [args], 4)
+	jg_utils.header("Deps of %s:" % [args], Log_At)
 	for key in deps:
-		jg_utils.msg("---- %s (%s):" % [key, len(deps[key])], 3)
+		jg_utils.msg("---- %s (%s):" % [key, len(deps[key])], Log_At)
 		for val in deps[key]:
-			jg_utils.msg("- %s" % val, 3)
+			jg_utils.msg("- %s" % val, Log_At)
 
 func report_change(args):
 	for arg in args:
@@ -81,10 +87,9 @@ func compare_trees(arg):
 		print("- %s" % x)
 
 func inspect_props(args):
-	jg_utils.msg()
 	var prev_debug = jg_utils.debug
-	jg_utils.debug = 0
-	jg_utils.header("Props of: %s [%s]" % [args[0], args[0].get_instance_id()], 4)
+	jg_utils.debug = Level.DETAIL
+	jg_utils.header("Props of: %s [%s]" % [args[0], args[0].get_instance_id()], Level.TRACE)
 
 	var target			= args[0]
 	var all_props       = target.get_property_list()
@@ -96,16 +101,16 @@ func inspect_props(args):
 		var x = all_props[i]
 		match target.get(x.name):
 			0, null, "":
-				jg_utils.imsg("Null   ... %s" % x.name, 0)
+				jg_utils.imsg("Null   ... %s" % x.name, Level.DETAIL)
 			var val when x.name == "script":
-				jg_utils.imsg("Script ... %s" % val, 1)
+				jg_utils.imsg("Script ... %s" % val, Level.TRACE)
 				for prop in val.get_script_property_list():
-					jg_utils.imsg("- %s" % prop, 1)
+					jg_utils.imsg("- %s" % prop, Level.TRACE)
 			var val when x.name in copy_props:
-				jg_utils.imsg("Allow  ... %s : %s" % [x.name, val], 1)
+				jg_utils.imsg("Allow  ... %s : %s" % [x.name, val], Level.TRACE)
 			var val:
-				jg_utils.imsg("Else   ... %s : %s" % [x.name, val], 1)
-	jg_utils.header("----", 4)
+				jg_utils.imsg("Else   ... %s : %s" % [x.name, val], Level.TRACE)
+	jg_utils.header("----", Level.TRACE)
 	exit_copy()
 	jg_utils.debug = prev_debug
 
@@ -133,13 +138,10 @@ func get_copy_props(obj) -> Array:
 	var properties  = obj.get_property_list()
 	var sprops		= get_script_props(obj)
 	var allowed		= properties.filter(func(elem): return allow_prop(elem, sprops))
-	# print("Properties: %s" % [properties.map(func(elem): return elem.name)])
-	# print("Script Properties :%s" % [sprops])
-	# print("Allowed :%s" % [allowed.map(func(elem): return elem.name)])
-
 	return allowed
 
 func allow_prop(prop, script_props:=[]): # maybe[dict] -> bool
+	""" Test whether a property of an object is introspected for copying resources """
 	match prop:
 		null:
 			return false
@@ -157,6 +159,11 @@ func allow_prop(prop, script_props:=[]): # maybe[dict] -> bool
 			return true
 
 func allow_resource(obj): # maybe[obj] -> bool
+	"""
+	Test whether a resource is allowed to be copied
+	"""
+	# if obj != null:
+	# 	print("obj: %s : in whitelist: %s : %s" % [obj, obj.resource_path in resource_whitelist, resource_whitelist])
 	match obj:
 		null:
 			return false
@@ -169,10 +176,20 @@ func allow_resource(obj): # maybe[obj] -> bool
 		_ when obj.get_path() == "":   return false
 		_ when obj.get_path() == null: return false
 		_ when obj.get_path().contains(skip_dirs):
-			jg_utils.imsg("skipping addon: %s" % obj.get_path(), 4)
+			jg_utils.imsg("Skipping addon: %s" % obj.get_path(), Level.USER)
+			return false
+		_ when not resource_whitelist.is_empty() and obj.get_path() not in resource_whitelist:
+			jg_utils.imsg("Skipping Unselected: %s" % obj.get_path().get_file(), Level.USER)
 			return false
 		_:
 			return true
+
+func allow_subscene(path) -> bool:
+	if resource_whitelist.is_empty() or path in resource_whitelist:
+		return true
+
+	jg_utils.imsg("Skipping Unselected: %s" % path.get_file(), Level.USER)
+	return false
 
 #  enter/exit --------------------------------------------------
 
@@ -180,7 +197,6 @@ func enter_copy(obj) -> bool:
 	if obj in handled:
 		return false
 
-	jg_utils.msg()
 	jg_utils.msg("->")
 	handled.append(obj)
 	jg_utils.indent()
@@ -194,17 +210,17 @@ func exit_copy():
 
 func save_resource(res, new_path): # resource, str -> resource
 	if FileAccess.file_exists(new_path) and not self.allow_overwrite:
-		jg_utils.imsg("Resource already exists: %s" % new_path, 10)
+		jg_utils.imsg("Resource already exists: %s" % new_path, Level.USER)
 		return res
 
 	assert(res.resource_path, "Resource has no path: %s" % res)
-	const msg_level		= 3
+	const msg_level		= Level.TRACE
 	var res_path	= res.resource_path
 	var init_uid	= ResourceUID.path_to_uid(res_path)
 	res				= res.duplicate()
 	var target_ext  = new_path.get_extension()
 	var exts		= Array(ResourceSaver.get_recognized_extensions(res))
-	jg_utils.imsg("Available Extensions for saving: %s" % ", ".join(exts), 1)
+	jg_utils.imsg("Available Extensions for saving: %s" % ", ".join(exts), Level.TRACE)
 
 	match target_ext in exts:
 		_ when target_ext == "gd":
@@ -242,19 +258,40 @@ func save_resource(res, new_path): # resource, str -> resource
 #  main logic --------------------------------------------------
 
 func walk_resources(args) -> Dictionary:
-	""" for listing resources before copy
+	""" List all transitive dependencies of [args]
 
-	TODO: handle transitive deps
+	Includes the transitive base classes of scripts,
+	and resources of themes.
+
 	"""
-	var result		= {"Misc" : []}
+	assert(not registered_groups.is_empty(), "No Registered groups")
+	# Initialize the result dict with categories:
+	var result		= registered_groups.values().reduce(func(accum, elem): return accum.merged({elem : []}), {"Misc" : []})
+	jg_utils.msg("Registered groups: %s" % [registered_groups.values()])
 	var remaining	= Array(args)
-	var found		= []
+	var found		= JGSet.new()
+
+	jg_utils.msg("Walking: %s" % [args], Level.USER)
 	while not remaining.is_empty():
 		var curr = remaining.pop_front()
-		if curr in found:
+		if found.has(curr):
 			continue
-		found.append(curr)
-		result["Misc"].append(curr.get_file())
+		found.add(curr)
+		match curr.get_extension():
+			var ext when ext in registered_groups:
+				result[registered_groups[ext]].append(curr)
+			_:
+				result["Misc"].append(curr)
+
+		if curr.get_extension() == "gd":
+			match ResourceLoader.load(curr).get_base_script():
+				null: pass
+				var obj when not is_instance_valid(obj):
+					pass
+				var script when script.resource_path:
+					print("base script: %s" % script.resource_path)
+					remaining.push_back(script.resource_path)
+
 		var deps = ResourceLoader.get_dependencies(curr)
 		if len(deps) == 0: continue
 		for x in deps:
@@ -262,7 +299,8 @@ func walk_resources(args) -> Dictionary:
 				var fpath = x.split("::")[2]
 				remaining.push_back(fpath)
 
-	result["Misc"].sort()
+	for cat in result:
+		result[cat].sort()
 
 	return result
 
@@ -288,11 +326,10 @@ func copy_resource(arg): # str -> maybe[resource]
 			result = copy_file(arg)
 
 	exit_copy()
-	jg_utils.msg()
 	return result
 
 func copy_scene(arg): # str -> resource
-	jg_utils.header("Copying Scene: %s : %s" % [arg.to_upper(), type_string(typeof(arg))], 4)
+	jg_utils.header("Copying Scene: %s : %s" % [arg.to_upper(), type_string(typeof(arg))], Level.USER)
 	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
 	var inst		= res.instantiate()
@@ -304,7 +341,7 @@ func copy_scene(arg): # str -> resource
 	handle_props(inst)
 	handle_children(inst)
 
-	jg_utils.header("Added Marker to: %s" % inst, 2)
+	jg_utils.header("Added Marker to: %s" % inst, Level.TRACE)
 	inst.add_child(marker)
 	marker.owner = inst
 
@@ -315,15 +352,15 @@ func copy_scene(arg): # str -> resource
 	return result
 
 func copy_godot_format(arg): # str -> resource
-	jg_utils.header("Copying godot resource: %s" % arg.to_upper(), 3)
+	jg_utils.header("Copying godot resource: %s" % arg.to_upper(), Level.USER)
 	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
-	jg_utils.imsg("- Loaded GD Format: %s" % res, 2)
+	jg_utils.imsg("- Loaded GD Format: %s" % res, Level.TRACE)
 	handle_props(res)
 	return save_resource(res, target)
 
 func copy_gdscript(arg): # str -> resource:
-	jg_utils.header("Copying gdscript: %s" % arg.to_upper(), 3)
+	jg_utils.header("Copying gdscript: %s" % arg.to_upper(), Level.USER)
 	var target			= jg_utils.as_target(arg)
 	var res				= ResourceLoader.load(arg, "", cache_mode)
 	match res.get_base_script():
@@ -335,22 +372,24 @@ func copy_gdscript(arg): # str -> resource:
 	return save_resource(res, target)
 
 func copy_file(arg): # str -> resource
-	jg_utils.header("Copying file: %s" % arg.to_upper(), 3)
+	jg_utils.header("Copying file: %s" % arg.to_upper(), Level.USER)
 	var target		= jg_utils.as_target(arg)
 	var res			= ResourceLoader.load(arg, "", cache_mode)
-	jg_utils.imsg("Loaded File: %s" % res, 2)
+	jg_utils.imsg("Loaded File: %s" % res, Level.TRACE)
 	return save_resource(res, target)
 
 func handle_children(arg): # node -> none
 	var children = arg.find_children("*", "", false)
 	for child in children:
-		jg_utils.header("Child: %s" % child.name.to_upper(), 2)
+		jg_utils.header("Child: %s" % child.name.to_upper(), Level.TRACE)
 		handle_props(child)
 		match child.scene_file_path:
 			null, "":
 				enter_copy(child)
 				handle_children(child)
 				exit_copy()
+			var path when not allow_subscene(path):
+				continue
 			var path:
 				copy_resource(path)
 				var target	= jg_utils.as_target(path)
@@ -369,27 +408,33 @@ func handle_props(obj): # obj -> none
 		match val:
 			null: pass
 			_ when allow_resource(val):
-				jg_utils.imsg("prop: %s" % prop.name.to_upper(), 2)
+				jg_utils.imsg("prop: %s" % prop.name.to_upper(), Level.TRACE)
 				match copy_resource(val.resource_path):
 					null: pass
 					var result:
-						jg_utils.imsg("Setting Prop: %s -> %s -> %s" % [obj, prop.name.to_upper(), result], 2)
+						jg_utils.imsg("Setting Prop: %s -> %s -> %s" % [obj, prop.name.to_upper(), result], Level.DETAIL)
 						obj.set(prop.name, result)
 
 	# Then handle scripts
-	if obj.get_script() == null:
-		return
+	match obj.get_script():
+		null:
+			return
+		var script when not is_instance_valid(script):
+			return
+		var script when not allow_resource(script):
+			return
 
 	match copy_resource(obj.get_script().resource_path):
 		null:
 			pass
 		var script:
-			jg_utils.imsg("Setting Script: %s -> %s -> %s" % [obj, "script", script], 2)
+			jg_utils.imsg("Setting Script: %s -> %s -> %s" % [obj, "script", script], Level.DETAIL)
 			obj.set_script(script)
 
 	# Then reapply script props:
 	for pair in sprop_vals:
 		match pair:
 			[var prop, var pval]:
-				jg_utils.imsg("Setting Script Prop: %s -> %s -> %s" % [obj, prop.to_upper(), pval], 2)
+
+				jg_utils.imsg("Setting Script Prop: %s -> %s -> %s" % [obj, prop.to_upper(), pval], Level.DETAIL)
 				obj.set(prop, pval)

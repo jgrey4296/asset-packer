@@ -115,7 +115,7 @@ offset_top = -11.5
 offset_right = 50.0
 offset_bottom = 11.5
 grow_vertical = 2
-text = "Debug"
+text = "Debug Verbosity"
 vertical_alignment = 1
 
 [node name="value" type="SpinBox" parent="control/debug" unique_id=688031453]

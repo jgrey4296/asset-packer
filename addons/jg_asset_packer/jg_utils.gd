@@ -5,13 +5,23 @@ class_name jg_utils
 
 """
 
-static var export_prefix	: String	= "res://addons/"
-static var export_target	: String	= "MyCollectedAddon"
-static var debug			: int		= 0
-const INDENT_STR						= "  "
-static var indent_amt : int				= 0
+enum LOG_LEVEL {ERROR, USER, TRACE, DETAIL}
+
+const setting_prefix						= "plugins/jg_asset_packer"
+static var export_prefix	: String		= "res://addons/"
+static var export_target	: String		= "MyCollectedAddon"
+static var debug			: LOG_LEVEL		= LOG_LEVEL.USER
+static var indent_amt		: int			= 0
+const INDENT_STR							= "  "
 
 #  misc --------------------------------------------------
+
+static func setting_named(...vals:Array):
+	return vals.reduce(func(accum, elem): return accum.path_join(elem), setting_prefix)
+
+static func set_prefix_and_target(prefix, target):
+	export_prefix = prefix
+	export_target = target
 
 static func as_target(x, relative:=false):
 	var prefix = jg_utils.export_prefix
@@ -25,15 +35,23 @@ static func as_target(x, relative:=false):
 		_:
 			return prefix.path_join(target).path_join(x.get_file())
 
-static func ensure_export_dir() -> bool:
-	if DirAccess.open(jg_utils.export_prefix).dir_exists(jg_utils.export_target):
-		assert(false, "target already exists: %s" % jg_utils.export_prefix.path_join(jg_utils.export_target))
-		return false
+static func ensure_export_dir(prefix:=export_prefix, name:=export_target) -> bool:
+	""" Returns false if the dir already exists """
+	var abs = ProjectSettings.globalize_path(prefix.path_join(name))
+	match DirAccess.open(prefix):
+		var ep when ep == null or not is_instance_valid(ep):
+			# export prefix doesnt exist
+			DirAccess.make_dir_recursive_absolute(abs)
+			return true
 
-
-	msg("- Making export dir: %s/%s" % [export_prefix, export_target])
-	DirAccess.open(export_prefix).make_dir(export_target)
-	return true
+		var ep when ep.dir_exists(name):
+			# already exists
+			assert(false, "target already exists: %s" % abs)
+			return  false
+		var ep:
+			msg("- Making export dir: %s/%s" % [prefix, name])
+			DirAccess.make_dir_recursive_absolute(abs)
+			return true
 
 #  scene modification --------------------------------------------------
 
@@ -86,15 +104,18 @@ static func deindent():
 	if jg_utils.indent_amt < 0:
 		jg_utils.indent_amt = 0
 
-static func msg(msg:="", level:=0):
-	if level <= debug:
+static func reset_indent():
+	indent_amt = 0
+
+static func msg(msg:="", level:LOG_LEVEL=LOG_LEVEL.DETAIL):
+	if debug < level:
 		return
 	print("%s" % msg)
 
-static func imsg(msg, level:=0):
+static func imsg(msg, level:LOG_LEVEL=LOG_LEVEL.DETAIL):
 	""" msg, with indentation """
 	msg("%s : %s" % [INDENT_STR.repeat(jg_utils.indent_amt), str(msg)], level)
 
-static func header(msg, level:=0):
+static func header(msg, level:LOG_LEVEL=LOG_LEVEL.DETAIL):
 	var line = "-".repeat(level)
 	imsg("%s %s %s" % [line, str(msg), line], level)

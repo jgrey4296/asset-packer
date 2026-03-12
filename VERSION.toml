@@ -13,28 +13,4 @@ version = "0.1.0"
 file = "addons/jg_asset_packer/plugin.cfg"
 expr = 'version="(.*)"'
 
-[[files]]
-file = "pyproject.toml"
-expr = 'version\s+=\s+"(.*)"'
-
-[[files]]
-file = "Cargo.toml"
-expr = 'version\s+=\s+"(.*)"'
-
-[[files]]
-file = "towncrier.toml"
-expr = 'version\s+=\s+"(.*)"'
-
-[[files]]
-file = "build.gradle.kts"
-expr = 'version\s+=\s+"(.*)"'
-
-[[files]]
-file = "mix.exs"
-expr = 'version:\s+"(.*)"'
-
-[[files]]
-file = "Eask"
-expr = '\(defvar version "(.*)"\)'
-
 [package]
