@@ -1,6 +1,7 @@
 ## .gitignore -*- mode: Gitignore -*-
 
 test_export/
+!*.png
 
 # Log Files
 log.*
