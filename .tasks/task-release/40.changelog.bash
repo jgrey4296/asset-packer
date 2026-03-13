@@ -7,4 +7,3 @@ source "$POLY_SRC/lib/lib-util.bash"
 [[ -e "$POLYGLOT_ROOT/.tasks/task-util.bash" ]] && source "$POLYGLOT_ROOT/.tasks/task-util.bash"
 
 tdot "release" "Generating Towncrier Changelog"
-towncrier build --yes

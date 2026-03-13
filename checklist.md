@@ -3,13 +3,13 @@
 
 https://godotengine.org/asset-library/asset/submit
 
-- [ ] Godot
+- [x] Godot
   - [x] plugin.cfg
   - [x] Functionality
   - [x] Located in addons
-  - [ ] Screenshots
-  - [ ] icon link
-  - [x] examples
+  - [x] Screenshots
+  - [x] icon link
+  - [x] example
   - [x] No submodules
   - [x] License in addon
   - [x] Readme in addon
@@ -22,8 +22,3 @@ https://godotengine.org/asset-library/asset/submit
     - [x] gitignore
     - [x] gitattributes
       - [x] export-ignore
-
-- [ ] Versioning
-- [ ] use AcceptDialog/ConfirmationDialog
-- [ ] Add confirmation popup after export
-- [ ] polyglot release/tag
